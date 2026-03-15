@@ -6,7 +6,7 @@ public interface IGetInput
 
     public int GetTricksCount();
 
-    public void GetTricks();
+    public void GetTricks(ITestBlock testBlock);
 
-    public bool GetWitnessedOrder();
+    public bool GetWitnessedOrder(ITestBlock testBlock);
 }

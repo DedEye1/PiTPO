@@ -4,7 +4,7 @@ namespace classes;
 
 public class GetInput : IGetInput
 {
-    public List<TestBlock> testBlocks = [];
+    public List<TestBlock> TestBlocks { get; } = [];
 
     public GetInput()
     {
@@ -12,39 +12,57 @@ public class GetInput : IGetInput
         Console.ReadLine();
         for (int i = 0; i < testBlocksCount; i++)
         {
-            testBlocks.Add(new TestBlock());
+            TestBlock curTestBlock = new TestBlock();
+            TestBlocks.Add(curTestBlock);
 
             int tricksCount = GetTricksCount();
             for (int j = 0; j < tricksCount; j++)
             {
-                GetTricks();
+                GetTricks(curTestBlock);
             }
 
             bool readEmptyLine = false;
             for (int j = 0; j < tricksCount || !readEmptyLine; j++)
             {
-                readEmptyLine = GetWitnessedOrder();
+                readEmptyLine = GetWitnessedOrder(curTestBlock);
             }
         }
     }
 
     public int GetTestBlocksCount()
     {
-        return 0;
+        return Convert.ToInt32(Console.ReadLine());
     }
 
     public int GetTricksCount()
     {
-        return 0;
+        return Convert.ToInt32(Console.ReadLine());
     }
 
-    public void GetTricks()
+    public void GetTricks(ITestBlock testBlock)
     {
+        List<int> tricks = [];
 
+        string tricksString = Console.ReadLine()!;
+        tricksString.Split(" ").ToList().ForEach(
+            trick => tricks.Add(Convert.ToInt32(trick))
+        );
+
+        testBlock.AddTricks(tricks);
     }
 
-    public bool GetWitnessedOrder()
+    public bool GetWitnessedOrder(ITestBlock testBlock)
     {
-        return false;
+        bool readEmptyLine;
+
+        string? readInput = Console.ReadLine();
+        readEmptyLine = string.IsNullOrEmpty(readInput);
+
+        if (!readEmptyLine)
+        {
+            testBlock.AddWitnessedOrder(Convert.ToInt32(readInput));
+        }
+
+        return readEmptyLine;
     }
 }
