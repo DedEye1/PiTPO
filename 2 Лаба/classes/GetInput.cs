@@ -19,9 +19,11 @@ public class GetInput : IGetInput
             {
                 GetTricks();
             }
-            for (int j = 0; j < tricksCount; j++)
+
+            bool readEmptyLine = false;
+            for (int j = 0; j < tricksCount || !readEmptyLine; j++)
             {
-                GetWitnessedOrder();
+                readEmptyLine = GetWitnessedOrder();
             }
         }
     }
