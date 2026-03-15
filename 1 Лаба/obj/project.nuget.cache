@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "VTxrphUMTv0=",
+  "success": true,
+  "projectFilePath": "/home/dedeye/Documents/Учёба/ПИТПО/1 Лаба/1 Лаба.csproj",
+  "expectedPackageFiles": [
+    "/home/dedeye/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "/home/dedeye/Documents/Учёба/ПИТПО/1 Лаба/1 Лаба.csproj",
+      "warningLevel": 1,
+      "filePath": "/home/dedeye/Documents/Учёба/ПИТПО/1 Лаба/1 Лаба.csproj",
+      "targetGraphs": []
+    }
+  ]
+}
