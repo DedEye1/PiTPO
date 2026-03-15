@@ -5,6 +5,10 @@ namespace classes;
 public class Candidate : ICandidate
 {
     private static int _ID = 1;
+    public static void ResetIDs()
+    {
+        _ID = 1;
+    }
 
     public int ID { get; }
     public string Name { get; }

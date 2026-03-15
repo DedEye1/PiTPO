@@ -4,17 +4,24 @@ namespace classes;
 
 public class TestBlock : ITestBlock
 {
-    private readonly List<ICandidate> _candidates = [];
+    public TestBlock()
+    {
+        Candidate.ResetIDs();
+    }
+
+    private readonly Dictionary<int, ICandidate> _candidates = [];
     private int _totalVotes = 0;
 
-    private int iteration = 0;
+    private int _iteration = 0;
     public string CalculateWinner()
     {
         List<string> winners = [];
         while (!winners.Any())
         {
+            System.Console.WriteLine($"###{++_iteration}###");
             CalculateCandidatesPercentages();
-            foreach (ICandidate candidate in _candidates)
+            System.Console.WriteLine(ToString());
+            foreach (ICandidate candidate in _candidates.Values)
             {
                 if (candidate.VotesPercentage > 50 || EqualCandidates())
                 {
@@ -23,8 +30,8 @@ public class TestBlock : ITestBlock
             }
             if (!winners.Any())
             {
-                int minVotes = _candidates.MinBy(cand => cand.Votes)!.Votes;
-                foreach (ICandidate candidate in _candidates.Where(cand => cand.Votes == minVotes).ToList())
+                int minVotes = _candidates.MinBy(cand => cand.Value.Votes).Value.Votes;
+                foreach (ICandidate candidate in _candidates.Where(cand => cand.Value.Votes == minVotes).ToDictionary().Values)
                 {
                     DiscardCandidate(candidate);
                 }
@@ -36,15 +43,16 @@ public class TestBlock : ITestBlock
 
     private bool EqualCandidates()
     {
-        int minVotes = _candidates.MinBy(cand => cand.Votes)!.Votes;
-        int equalCands = _candidates.Count(cand => cand.Votes == minVotes);
+        int minVotes = _candidates.MinBy(cand => cand.Value.Votes).Value.Votes;
+        int equalCands = _candidates.Count(cand => cand.Value.Votes == minVotes);
         return equalCands == _candidates.Count;
     }
 
     public void DiscardCandidate(ICandidate candidate)
     {
-        _candidates.Remove(candidate);
-        foreach (ICandidate cand in _candidates)
+        System.Console.WriteLine($"To remove: {candidate.ID} - {candidate.Name}");
+        _candidates.Remove(candidate.ID);
+        foreach (ICandidate cand in _candidates.Values)
         {
             cand.RemoveCandidateID(candidate.ID);
         }
@@ -59,7 +67,7 @@ public class TestBlock : ITestBlock
 
     public void CalculateCandidatesPercentages()
     {
-        foreach (ICandidate candidate in _candidates)
+        foreach (ICandidate candidate in _candidates.Values)
         {
             candidate.CalculatePercentage(_totalVotes);
         }
@@ -67,22 +75,22 @@ public class TestBlock : ITestBlock
 
     public void AddCandidate(ICandidate candidate)
     {
-        _candidates.Add(candidate);
+        _candidates.Add(candidate.ID, candidate);
     }
 
     public void PassBulletinToCandidateID(int id, List<int> bulletin)
     {
-        _candidates[id - 1].AddBulletin(bulletin);
+        _candidates[id].AddBulletin(bulletin);
     }
 
     public void AddBulletinToCandidateID(int id, List<int> bulletin)
     {
-        _candidates[id - 1].AddBulletin(bulletin);
+        _candidates[id].AddBulletin(bulletin);
         _totalVotes++;
     }
 
     public override string ToString()
     {
-        return string.Join("\n", _candidates) + $"\nTotal Votes:{_totalVotes}";
+        return string.Join("\n", _candidates.Values) + $"\nTotal Votes:{_totalVotes}";
     }
 }
