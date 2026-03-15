@@ -2,7 +2,7 @@ namespace interfaces;
 
 public interface IGetInput
 {
-    public void GetTestBlocksCount();
+    public int GetTestBlocksCount();
 
     public int GetCandidatesCount();
 

@@ -6,14 +6,13 @@ public class GetInput : IGetInput
 {
     private const int BULLETIN_LINES = 1000;
 
-    private int _testBlocksCount = 0;
     public List<ITestBlock> TestBlocks { get; } = [];
 
     public GetInput()
     {
-        GetTestBlocksCount();
+        int testBlocksCount = GetTestBlocksCount();
         Console.ReadLine();
-        for (int i = 0; i < _testBlocksCount; i++)
+        for (int i = 0; i < testBlocksCount; i++)
         {
             TestBlocks.Add(new TestBlock());
 
@@ -31,9 +30,9 @@ public class GetInput : IGetInput
         }
     }
 
-    public void GetTestBlocksCount()
+    public int GetTestBlocksCount()
     {
-        _testBlocksCount = Convert.ToInt32(Console.ReadLine());
+        return Convert.ToInt32(Console.ReadLine());
     }
 
     public int GetCandidatesCount()
