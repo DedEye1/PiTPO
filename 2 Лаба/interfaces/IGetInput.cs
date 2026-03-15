@@ -8,5 +8,5 @@ public interface IGetInput
 
     public void GetTricks();
 
-    public void GetWitnessOrder();
+    public bool GetWitnessedOrder();
 }
