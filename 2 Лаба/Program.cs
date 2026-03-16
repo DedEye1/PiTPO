@@ -9,7 +9,7 @@ public class Program
 
         foreach (ITestBlock testBlock in getInput.TestBlocks)
         {
-            System.Console.WriteLine(testBlock);
+            testBlock.PrintNewOrder();
         }
     }
 }

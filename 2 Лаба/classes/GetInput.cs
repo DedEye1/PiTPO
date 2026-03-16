@@ -48,7 +48,7 @@ public class GetInput : IGetInput
             trick => tricks.Add(Convert.ToInt32(trick))
         );
 
-        testBlock.AddTricks(tricks);
+        testBlock.AddTrick(tricks);
     }
 
     public bool GetWitnessedOrder(ITestBlock testBlock)
