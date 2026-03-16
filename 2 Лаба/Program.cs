@@ -10,6 +10,7 @@ public class Program
         foreach (ITestBlock testBlock in getInput.TestBlocks)
         {
             testBlock.PrintNewOrder();
+            Console.WriteLine();
         }
     }
 }
