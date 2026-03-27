@@ -1,0 +1,15 @@
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/bin/Debug/net10.0/6 Лаба
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/bin/Debug/net10.0/6 Лаба.deps.json
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/bin/Debug/net10.0/6 Лаба.runtimeconfig.json
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/bin/Debug/net10.0/6 Лаба.dll
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/bin/Debug/net10.0/6 Лаба.pdb
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.GeneratedMSBuildEditorConfig.editorconfig
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.AssemblyInfoInputs.cache
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.AssemblyInfo.cs
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.csproj.CoreCompileInputs.cache
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.sourcelink.json
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.dll
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/refint/6 Лаба.dll
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.pdb
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/6 Лаба.genruntimeconfig.cache
+/home/dedeye/Documents/Учёба/ПИТПО/6 Лаба/obj/Debug/net10.0/ref/6 Лаба.dll
