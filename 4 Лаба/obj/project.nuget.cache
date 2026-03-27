@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "1ZUiSamIeo8=",
+  "success": true,
+  "projectFilePath": "/home/dedeye/Documents/Учёба/ПИТПО/4 Лаба/4 Лаба.csproj",
+  "expectedPackageFiles": [
+    "/home/dedeye/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.3/microsoft.aspnetcore.app.ref.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
