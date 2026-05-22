@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Искусственная жизнь - симуляция</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="controls">
+    <button id="stepBtn">Шаг</button>
+    <button id="startBtn">Старт</button>
+    <button id="stopBtn">Стоп</button>
+    <button id="resetBtn">Сброс</button>
+    <label>Интервал (мс): <input type="number" id="interval" value="100"></label>
+  </div>
+  <div class="stats-panel">
+    <span>Шаг: <span id="stepValue">0</span></span>
+    <span>Растения: <span id="plants">0</span></span>
+    <span>Травоядные: <span id="herbivores">0</span></span>
+    <span>Хищники: <span id="carnivores">0</span></span>
+    <span>Съедено растений: <span id="eatenPlants">0</span></span>
+    <span>Съедено травоядных: <span id="eatenHerb">0</span></span>
+  </div>
+  <canvas id="gridCanvas" width="600" height="600"></canvas>
+  <canvas id="statsChart" width="400" height="300"></canvas>
+  <script src="script.js"></script>
+</body>
+
+</html>
