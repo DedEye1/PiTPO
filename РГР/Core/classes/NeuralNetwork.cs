@@ -4,38 +4,38 @@ public class NeuralNetwork
 {
   private const int InputCount = 12;
   private const int OutputCount = 4;
-  private readonly double[,] weights;
-  private readonly double[] biases;
-  private readonly Random random = new();
+  private readonly double[,] _weights;
+  private readonly double[] _biases;
+  private readonly Random _random = new();
 
   public NeuralNetwork()
   {
-    weights = new double[InputCount, OutputCount];
-    biases = new double[OutputCount];
+    _weights = new double[InputCount, OutputCount];
+    _biases = new double[OutputCount];
     Randomize();
   }
 
-  public void Randomize()
+  private void Randomize()
   {
-    for (int i = 0; i < InputCount; i++)
-      for (int o = 0; o < OutputCount; o++)
-        weights[i, o] = (random.NextDouble() * 2.0) - 1.0;
-    for (int o = 0; o < OutputCount; o++)
-      biases[o] = (random.NextDouble() * 2.0) - 1.0;
+    for (var i = 0; i < InputCount; i++)
+      for (var o = 0; o < OutputCount; o++)
+        _weights[i, o] = (_random.NextDouble() * 2.0) - 1.0;
+    for (var o = 0; o < OutputCount; o++)
+      _biases[o] = (_random.NextDouble() * 2.0) - 1.0;
   }
 
   public int Activate(double[] inputs)
   {
-    double[] outputs = new double[OutputCount];
-    for (int o = 0; o < OutputCount; o++)
+    var outputs = new double[OutputCount];
+    for (var o = 0; o < OutputCount; o++)
     {
-      double sum = biases[o];
-      for (int i = 0; i < InputCount; i++)
-        sum += inputs[i] * weights[i, o];
+      var sum = _biases[o];
+      for (var i = 0; i < InputCount; i++)
+        sum += inputs[i] * _weights[i, o];
       outputs[o] = Sigmoid(sum);
     }
-    int winner = 0;
-    for (int o = 1; o < OutputCount; o++)
+    var winner = 0;
+    for (var o = 1; o < OutputCount; o++)
       if (outputs[o] > outputs[winner]) winner = o;
     return winner;
   }
@@ -45,19 +45,19 @@ public class NeuralNetwork
   public NeuralNetwork Clone()
   {
     NeuralNetwork clone = new();
-    Array.Copy(weights, clone.weights, weights.Length);
-    Array.Copy(biases, clone.biases, biases.Length);
+    Array.Copy(_weights, clone._weights, _weights.Length);
+    Array.Copy(_biases, clone._biases, _biases.Length);
     return clone;
   }
 
   public void Mutate(double mutationRate)
   {
-    for (int i = 0; i < InputCount; i++)
-      for (int o = 0; o < OutputCount; o++)
-        if (random.NextDouble() < mutationRate)
-          weights[i, o] += (random.NextDouble() * 0.4) - 0.2;
-    for (int o = 0; o < OutputCount; o++)
-      if (random.NextDouble() < mutationRate)
-        biases[o] += (random.NextDouble() * 0.4) - 0.2;
+    for (var i = 0; i < InputCount; i++)
+      for (var o = 0; o < OutputCount; o++)
+        if (_random.NextDouble() < mutationRate)
+          _weights[i, o] += (_random.NextDouble() * 0.4) - 0.2;
+    for (var o = 0; o < OutputCount; o++)
+      if (_random.NextDouble() < mutationRate)
+        _biases[o] += (_random.NextDouble() * 0.4) - 0.2;
   }
 }

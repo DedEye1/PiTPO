@@ -5,29 +5,37 @@ namespace Core.classes;
 
 public class Agent(AgentType type, NeuralNetwork? brain = null)
 {
-  public AgentType Type = type;
+  public readonly AgentType Type = type;
   public Point Location;
-  public Direction Facing = Direction.North;
-  public double Energy = 100.0;
+  private Direction _facing = Direction.North;
+  private double _energy = 100.0;
   public int Age = 0;
-  public int Generation = 1;
+  private int _generation = 1;
   public bool IsAlive = true;
-  public NeuralNetwork Brain = brain ?? new NeuralNetwork();
+  public readonly NeuralNetwork Brain = brain ?? new NeuralNetwork();
 
   public double[] GetSensors(SimulationEnvironment env)
   {
-    double[] sensors = new double[12];
-    int idx = 0;
-    for (int zone = 0; zone < 4; zone++)
+    var sensors = new double[12];
+    var idx = 0;
+    for (var zone = 0; zone < 4; zone++)
     {
       var positions = GetZonePositions(zone);
       int plantCount = 0, herbCount = 0, carnCount = 0;
-      foreach (var pos in positions)
+      foreach (var entity in positions.Select(env.GetEntityAt))
       {
-        EntityType entity = env.GetEntityAt(pos);
-        if (entity == EntityType.Plant) plantCount++;
-        else if (entity == EntityType.Herbivore) herbCount++;
-        else if (entity == EntityType.Carnivore) carnCount++;
+        switch (entity)
+        {
+          case EntityType.Plant:
+            plantCount++;
+            break;
+          case EntityType.Herbivore:
+            herbCount++;
+            break;
+          case EntityType.Carnivore:
+            carnCount++;
+            break;
+        }
       }
       sensors[idx++] = plantCount;
       sensors[idx++] = herbCount;
@@ -39,18 +47,17 @@ public class Agent(AgentType type, NeuralNetwork? brain = null)
   private List<Point> GetZonePositions(int zone)
   {
     List<Point> positions = [];
-    int[,] offsets;
-    switch (zone)
+    var offsets = zone switch
     {
-      case 0: offsets = new int[,] { { -2, -2 }, { -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 } }; break;
-      case 1: offsets = new int[,] { { -1, -2 }, { 0, -2 } }; break;
-      case 2: offsets = new int[,] { { -1, 2 }, { 0, 2 } }; break;
-      default: offsets = new int[,] { { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } }; break;
-    }
-    for (int i = 0; i < offsets.GetLength(0); i++)
+      0 => new int[,] { { -2, -2 }, { -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 } },
+      1 => new int[,] { { -1, -2 }, { 0, -2 } },
+      2 => new int[,] { { -1, 2 }, { 0, 2 } },
+      _ => new int[,] { { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } }
+    };
+    for (var i = 0; i < offsets.GetLength(0); i++)
     {
       int dx = offsets[i, 0], dy = offsets[i, 1];
-      (dx, dy) = RotateOffset(dx, dy, Facing);
+      (dx, dy) = RotateOffset(dx, dy, _facing);
       positions.Add(new Point(Location.X + dx, Location.Y + dy));
     }
     return positions;
@@ -72,8 +79,8 @@ public class Agent(AgentType type, NeuralNetwork? brain = null)
   {
     switch (action)
     {
-      case 0: Facing = (Direction)(((int)Facing + 3) % 4); break;
-      case 1: Facing = (Direction)(((int)Facing + 1) % 4); break;
+      case 0: _facing = (Direction)(((int)_facing + 3) % 4); break;
+      case 1: _facing = (Direction)(((int)_facing + 1) % 4); break;
       case 2: Move(env); break;
       case 3: Eat(env); break;
     }
@@ -81,19 +88,18 @@ public class Agent(AgentType type, NeuralNetwork? brain = null)
 
   private void Move(SimulationEnvironment env)
   {
-    Point newPos = Location;
-    switch (Facing)
+    var newPos = Location;
+    switch (_facing)
     {
       case Direction.North: newPos.X--; break;
       case Direction.South: newPos.X++; break;
       case Direction.East: newPos.Y++; break;
       case Direction.West: newPos.Y--; break;
     }
-    if (SimulationEnvironment.IsValidPosition(newPos) && env.GetEntityAt(newPos) == EntityType.Empty)
-    {
-      env.MoveAgent(this, newPos);
-      Location = newPos;
-    }
+
+    if (!SimulationEnvironment.IsValidPosition(newPos) || env.GetEntityAt(newPos) != EntityType.Empty) return;
+    env.MoveAgent(this, newPos);
+    Location = newPos;
   }
 
   private void Eat(SimulationEnvironment env)
@@ -105,13 +111,13 @@ public class Agent(AgentType type, NeuralNetwork? brain = null)
       if (Type == AgentType.Herbivore && food == EntityType.Plant)
       {
         env.RemovePlant(pos);
-        Energy += 30;
+        _energy += 30;
         return;
       }
       else if (Type == AgentType.Carnivore && food == EntityType.Herbivore)
       {
         env.RemoveHerbivore(pos);
-        Energy += 50;
+        _energy += 50;
         return;
       }
     }
@@ -119,24 +125,24 @@ public class Agent(AgentType type, NeuralNetwork? brain = null)
 
   public void UpdateMetabolism()
   {
-    Energy -= (Type == AgentType.Herbivore) ? 2.0 : 1.0;
+    _energy -= (Type == AgentType.Herbivore) ? 2.0 : 1.0;
     Age++;
-    if (Energy <= 0) IsAlive = false;
+    if (_energy <= 0) IsAlive = false;
   }
 
   public Agent? Reproduce()
   {
-    const double MaxEnergy = 200.0;
-    if (Energy < MaxEnergy * 0.9) return null;
+    const double maxEnergy = 200.0;
+    if (_energy < maxEnergy * 0.9) return null;
 
-    NeuralNetwork childBrain = Brain.Clone();
+    var childBrain = Brain.Clone();
     childBrain.Mutate(0.2);
     Agent child = new(Type, childBrain)
     {
-      Energy = Energy / 2,
-      Generation = Generation + 1
+      _energy = _energy / 2,
+      _generation = _generation + 1
     };
-    Energy /= 2;
+    _energy /= 2;
     return child;
   }
 }

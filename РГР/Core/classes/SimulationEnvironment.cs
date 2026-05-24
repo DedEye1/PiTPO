@@ -6,156 +6,142 @@ namespace Core.classes;
 public class SimulationEnvironment
 {
   private const int GridSize = 30;
-  private readonly EntityType[,] grid;
-  private readonly List<Agent> agents;
-  private readonly List<Point> plants;
-  private readonly Random random = new();
+  private readonly EntityType[,] _grid;
+  private readonly List<Agent> _agents;
+  private readonly List<Point> _plants;
+  private readonly Random _random = new();
 
-  private int totalEatenPlants = 0;
-  private int totalEatenHerbivores = 0;
+  private int _totalEatenPlants, _totalEatenHerbivores;
 
-  public IReadOnlyList<Agent> Agents => agents.AsReadOnly();
-  public int PlantsCount => plants.Count;
-  public int TotalEatenPlants => totalEatenPlants;
-  public int TotalEatenHerbivores => totalEatenHerbivores;
+  public IReadOnlyList<Agent> Agents => _agents.AsReadOnly();
+  public int PlantsCount => _plants.Count;
+  public int TotalEatenPlants => _totalEatenPlants;
+  public int TotalEatenHerbivores => _totalEatenHerbivores;
   public int Size => GridSize;
 
   public SimulationEnvironment()
   {
-    grid = new EntityType[GridSize, GridSize];
-    agents = [];
-    plants = [];
-    for (int i = 0; i < GridSize; i++)
-      for (int j = 0; j < GridSize; j++)
-        grid[i, j] = EntityType.Empty;
+    _grid = new EntityType[GridSize, GridSize];
+    _agents = [];
+    _plants = [];
+    for (var i = 0; i < GridSize; i++)
+      for (var j = 0; j < GridSize; j++)
+        _grid[i, j] = EntityType.Empty;
   }
 
   public void Initialize(int plantCount, int herbivoreCount, int carnivoreCount)
   {
-    for (int i = 0; i < plantCount; i++) AddRandomPlant();
-    for (int i = 0; i < herbivoreCount; i++) AddRandomAgent(AgentType.Herbivore);
-    for (int i = 0; i < carnivoreCount; i++) AddRandomAgent(AgentType.Carnivore);
+    for (var i = 0; i < plantCount; i++) AddRandomPlant();
+    for (var i = 0; i < herbivoreCount; i++) AddRandomAgent(AgentType.Herbivore);
+    for (var i = 0; i < carnivoreCount; i++) AddRandomAgent(AgentType.Carnivore);
   }
 
   private void AddRandomPlant()
   {
-    if (plants.Count >= GridSize * GridSize) return;
+    if (_plants.Count >= GridSize * GridSize) return;
 
     Point pos;
-    int attempts = 0;
+    var attempts = 0;
     do
     {
-      pos = new Point(random.Next(GridSize), random.Next(GridSize));
+      pos = new Point(_random.Next(GridSize), _random.Next(GridSize));
       attempts++;
       if (attempts > 1000) return;
     }
-    while (grid[pos.X, pos.Y] != EntityType.Empty);
+    while (_grid[pos.X, pos.Y] != EntityType.Empty);
 
-    grid[pos.X, pos.Y] = EntityType.Plant;
-    plants.Add(pos);
+    _grid[pos.X, pos.Y] = EntityType.Plant;
+    _plants.Add(pos);
   }
 
   private void AddRandomAgent(AgentType type)
   {
     Point pos;
-    do { pos = new Point(random.Next(GridSize), random.Next(GridSize)); }
-    while (grid[pos.X, pos.Y] != EntityType.Empty);
+    do { pos = new Point(_random.Next(GridSize), _random.Next(GridSize)); }
+    while (_grid[pos.X, pos.Y] != EntityType.Empty);
     Agent agent = new(type) { Location = pos };
-    grid[pos.X, pos.Y] = (type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
-    agents.Add(agent);
+    _grid[pos.X, pos.Y] = (type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
+    _agents.Add(agent);
   }
 
   public EntityType GetEntityAt(Point pos)
   {
-    if (!IsValidPosition(pos)) return EntityType.Empty;
-    return grid[pos.X, pos.Y];
+    return !IsValidPosition(pos) ? EntityType.Empty : _grid[pos.X, pos.Y];
   }
-  public static bool IsValidPosition(Point pos) => pos.X >= 0 && pos.X < GridSize && pos.Y >= 0 && pos.Y < GridSize;
+  public static bool IsValidPosition(Point pos) => pos.X is >= 0 and < GridSize && pos.Y is >= 0 and < GridSize;
 
   public void RemovePlant(Point pos)
   {
-    if (grid[pos.X, pos.Y] == EntityType.Plant)
-    {
-      grid[pos.X, pos.Y] = EntityType.Empty;
-      plants.Remove(pos);
-      totalEatenPlants++;
-    }
+    if (_grid[pos.X, pos.Y] != EntityType.Plant) return;
+    _grid[pos.X, pos.Y] = EntityType.Empty;
+    _plants.Remove(pos);
+    _totalEatenPlants++;
   }
 
   public void RemoveHerbivore(Point pos)
   {
-    if (grid[pos.X, pos.Y] == EntityType.Herbivore)
-    {
-      grid[pos.X, pos.Y] = EntityType.Empty;
-      var herb = agents.FirstOrDefault(a => a.Location.X == pos.X && a.Location.Y == pos.Y && a.Type == AgentType.Herbivore);
-      if (herb != null)
-      {
-        herb.IsAlive = false;
-        totalEatenHerbivores++;
-      }
-    }
+    if (_grid[pos.X, pos.Y] != EntityType.Herbivore) return;
+    _grid[pos.X, pos.Y] = EntityType.Empty;
+    var herb = _agents.FirstOrDefault(a => a.Location.X == pos.X && a.Location.Y == pos.Y && a.Type == AgentType.Herbivore);
+    if (herb == null) return;
+    herb.IsAlive = false;
+    _totalEatenHerbivores++;
   }
 
   public void MoveAgent(Agent agent, Point newPos)
   {
-    grid[agent.Location.X, agent.Location.Y] = EntityType.Empty;
+    _grid[agent.Location.X, agent.Location.Y] = EntityType.Empty;
     agent.Location = newPos;
-    grid[newPos.X, newPos.Y] = (agent.Type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
+    _grid[newPos.X, newPos.Y] = (agent.Type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
   }
 
   public void SimulateStep()
   {
     foreach (var type in new[] { AgentType.Herbivore, AgentType.Carnivore })
     {
-      var activeAgents = agents.Where(a => a.IsAlive && a.Type == type).ToList();
+      var activeAgents = _agents.Where(a => a.IsAlive && a.Type == type).ToList();
       foreach (var agent in activeAgents)
       {
         if (!agent.IsAlive) continue;
-        double[] sensors = agent.GetSensors(this);
-        int action = agent.Brain.Activate(sensors);
+        var sensors = agent.GetSensors(this);
+        var action = agent.Brain.Activate(sensors);
         agent.PerformAction(action, this);
         agent.UpdateMetabolism();
-        Agent? child = agent.Reproduce();
-        if (child != null)
-        {
-          Point emptyPos = FindEmptyPosition();
-          if (emptyPos.X != -1)
-          {
-            child.Location = emptyPos;
-            agents.Add(child);
-            grid[emptyPos.X, emptyPos.Y] = (child.Type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
-          }
-        }
+        var child = agent.Reproduce();
+        if (child == null) continue;
+        var emptyPos = FindEmptyPosition();
+        if (emptyPos.X == -1) continue;
+        child.Location = emptyPos;
+        _agents.Add(child);
+        _grid[emptyPos.X, emptyPos.Y] = (child.Type == AgentType.Herbivore) ? EntityType.Herbivore : EntityType.Carnivore;
       }
     }
 
-    for (int i = agents.Count - 1; i >= 0; i--)
+    for (var i = _agents.Count - 1; i >= 0; i--)
     {
-      if (!agents[i].IsAlive)
-      {
-        grid[agents[i].Location.X, agents[i].Location.Y] = EntityType.Empty;
-        agents.RemoveAt(i);
-      }
+      if (_agents[i].IsAlive) continue;
+      _grid[_agents[i].Location.X, _agents[i].Location.Y] = EntityType.Empty;
+      _agents.RemoveAt(i);
     }
 
-    int maxFreeCells = GridSize * GridSize - plants.Count - agents.Count;
-    int newPlantCount = Math.Min(Math.Max(1, plants.Count / 10), maxFreeCells);
-    if (newPlantCount > 0)
+    var maxFreeCells = GridSize * GridSize - _plants.Count - _agents.Count;
+    var newPlantCount = Math.Min(Math.Max(1, _plants.Count / 10), maxFreeCells);
+    if (newPlantCount <= 0) return;
     {
-      for (int i = 0; i < newPlantCount; i++)
+      for (var i = 0; i < newPlantCount; i++)
         AddRandomPlant();
     }
   }
 
   private Point FindEmptyPosition()
   {
-    if (agents.Count + plants.Count >= GridSize * GridSize)
+    if (_agents.Count + _plants.Count >= GridSize * GridSize)
       return new Point(-1, -1);
 
-    for (int attempt = 0; attempt < 200; attempt++)
+    for (var attempt = 0; attempt < 200; attempt++)
     {
-      Point pos = new(random.Next(GridSize), random.Next(GridSize));
-      if (grid[pos.X, pos.Y] == EntityType.Empty)
+      Point pos = new(_random.Next(GridSize), _random.Next(GridSize));
+      if (_grid[pos.X, pos.Y] == EntityType.Empty)
         return pos;
     }
     return new Point(-1, -1);
